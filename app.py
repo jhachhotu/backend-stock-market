@@ -3,7 +3,8 @@ from flask_cors import CORS
 from mock_data import get_stock_data, get_stock_by_symbol
 
 app = Flask(__name__)
-CORS(app)
+# Allow CORS for the frontend origin (adjust if your frontend runs elsewhere)
+CORS(app, resources={r"/api/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}})
 
 @app.route('/')
 def home():
@@ -12,15 +13,9 @@ def home():
 @app.route('/api/companies')
 def get_companies():
     try:
-        # Return a list of all stocks as companies
+        # Return the full stock data for all companies
         stocks = get_stock_data()
-        # Format the response to match the expected structure
-        companies = [{
-            'id': stock['id'],
-            'symbol': stock['symbol'],
-            'name': stock['name']
-        } for stock in stocks]
-        return jsonify(companies)
+        return jsonify(stocks)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
